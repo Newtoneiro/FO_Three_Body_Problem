@@ -45,14 +45,14 @@ class PHYSICS_CONSTANTS:
     """
 
     # Constants for physics
-    GRAVITATIONAL_CONSTANT: float = 0.1
+    GRAVITATIONAL_CONSTANT: float = 0.20
 
     # Body constants
     MAX_BODY_RADIUS: int = 100
     MIN_BODY_RADIUS: int = 2
     DEFAULT_BODY_DENSITY: float = 1
     DEFAULT_BODY_MASS: int = 1000
-    DEFAULT_BODY_DISTANCE: float = PYGAME_CONSTANTS.WIDTH / 5
+    DEFAULT_BODY_DISTANCE: float = PYGAME_CONSTANTS.WIDTH / 3
 
     # Vector constants
     VELOCITY_LOSS_FACTOR: float = 0.9
