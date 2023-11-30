@@ -11,10 +11,14 @@ class PYGAME_CONSTANTS:
     WIDTH: int = 1000
     HEIGHT: int = 1000
     FPS: int = 120
-    WINDOW_TITLE: str = "v-vectors"
+    WINDOW_TITLE: str = "t-draw_trails, v-vectors"
 
     VECTOR_WIDTH: int = 2
+    TRAIL_WIDTH: int = 5
     VECTOR_LENGTH_MULTI: int = 10
+
+    BODY_TRAIL_LENGTH: int = 500
+    BODY_TRAIL_DROPOFF_TRESHOLD: float = 0.5  # when to start the fadeout
 
 
 class COLORS:

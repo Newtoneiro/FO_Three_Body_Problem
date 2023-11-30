@@ -2,6 +2,7 @@
 
 
 from __future__ import annotations
+from collections import deque
 
 import pygame
 import math
@@ -29,6 +30,7 @@ class Body:
         density: float = PHYSICS_CONSTANTS.DEFAULT_BODY_DENSITY,
     ):
         self._number = number
+        self._color = getattr(COLORS, f"BODY_COLOR_{self._number}")
         self._win = win
         self._mass = mass
         self._x = init_x
@@ -37,7 +39,16 @@ class Body:
         self._is_stationary = is_stationary
         self._density = density
 
+        self._init_last_positions()
         self._calculate_radius()
+
+    # ============== PRIVATE METHODS ============== #
+
+    def _init_last_positions(self) -> None:
+        """
+        Initialize the body's last positions list.
+        """
+        self._pos_history = deque(maxlen=PYGAME_CONSTANTS.BODY_TRAIL_LENGTH)
 
     def _calculate_radius(self) -> None:
         """
@@ -87,6 +98,96 @@ class Body:
 
         return axis
 
+    def _update_pos_history(self) -> None:
+        """
+        Update the body's last positions list.
+        """
+        self._pos_history.append((self._x, self._y))
+
+    def _draw_velocity_vector(self) -> None:
+        """
+        Draw the body's velocity vector on the canvas.
+        """
+        pygame.draw.line(
+            surface=self._win,
+            color=COLORS.VELOCITY_VECTORS_COLOR,
+            start_pos=(self._x, self._y),
+            end_pos=(
+                self._x + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
+                self._vector[0],
+                self._y + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
+                self._vector[1],
+            ),
+            width=PYGAME_CONSTANTS.VECTOR_WIDTH,
+        )
+
+    def _update_trail_variables(self, segment: int, opacity: float) \
+            -> tuple[tuple, float]:
+        """
+        Return the color of the trail segment.
+
+        Args:
+            segment(int): the index of the segment
+            opacity(float): the current opacity of the segment
+
+        Returns:
+            tuple: the color of the segment
+            float: the opacity of the segment
+        """
+        dropoff_treshold = int(
+            self._pos_history.maxlen *
+            PYGAME_CONSTANTS.BODY_TRAIL_DROPOFF_TRESHOLD
+        )
+
+        if segment < dropoff_treshold:
+            ret_color = self.change_color_opacity(
+                self._color, COLORS.BACKGROUND_COLOR, opacity
+            )
+            opacity += 1 / dropoff_treshold
+        else:
+            ret_color = self._color
+        return ret_color, opacity
+
+    def _draw_trails(self) -> None:
+        """
+        Draw the body's trails on the canvas.
+        """
+        opacity = 0.0  # starting from the end
+        for i in range(len(self._pos_history) - 1):
+            color, opacity = self._update_trail_variables(i, opacity)
+            pygame.draw.line(
+                surface=self._win,
+                color=color,
+                start_pos=self._pos_history[i],
+                end_pos=self._pos_history[i + 1],
+                width=PYGAME_CONSTANTS.TRAIL_WIDTH,
+            )
+
+    # ============== STATIC METHODS =============== #
+
+    @staticmethod
+    def change_color_opacity(
+            color1: tuple, color2: tuple, opacity: float
+            ) -> tuple:
+        """
+        Change the opacity of color1 to opacity, and return the result.
+
+        Args:
+            color1(tuple): the color to change the opacity of
+            color2(tuple): the relative color to change the opacity
+                           in regards to
+            opacity(float): the opacity
+
+        Returns:
+            tuple: the color with the changed opacity
+        """
+        return [
+            opacity * c1 + (1 - opacity) * c2
+            for c1, c2 in zip(color1, color2)
+            ]
+
+    # ============== PUBLIC METHODS =============== #
+
     def calculate_impact_on(self, other: Body) -> None:
         """
         Calculate the gravitational force between self and other body,
@@ -126,6 +227,8 @@ class Body:
         self._x += self._vector[0]
         self._y += self._vector[1]
 
+        self._update_pos_history()
+
         self._x = self._check_and_update_boundary(
             self._x, PYGAME_CONSTANTS.WIDTH, self._radius, 0
         )
@@ -133,27 +236,23 @@ class Body:
             self._y, PYGAME_CONSTANTS.HEIGHT, self._radius, 1
         )
 
-    def draw(self, show_velocity_vectors: bool = False) -> None:
+    def draw(
+            self,
+            show_velocity_vectors: bool = False,
+            show_trails: bool = False
+            ) -> None:
         """
         Draw the body on the canvas. If show_velocity_vectors is True,
-        also draw the velocity vector of the body.
+        also draw the velocity vector of the body. If show_trails is True,
+        also draw the trails of the body.
         """
+        if show_trails:
+            self._draw_trails()
         pygame.draw.circle(
             surface=self._win,
-            color=getattr(COLORS, f"BODY_COLOR_{self._number}"),
+            color=self._color,
             center=(self._x, self._y),
             radius=self._radius,
         )
         if show_velocity_vectors:
-            pygame.draw.line(
-                surface=self._win,
-                color=COLORS.VELOCITY_VECTORS_COLOR,
-                start_pos=(self._x, self._y),
-                end_pos=(
-                    self._x + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
-                    self._vector[0],
-                    self._y + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
-                    self._vector[1],
-                ),
-                width=PYGAME_CONSTANTS.VECTOR_WIDTH,
-            )
+            self._draw_velocity_vector()

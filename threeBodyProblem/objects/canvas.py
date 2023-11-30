@@ -3,6 +3,7 @@
 import pygame
 
 from threeBodyProblem.objects.body import Body
+from threeBodyProblem.constants import COLORS
 
 
 class Canvas:
@@ -16,6 +17,7 @@ class Canvas:
         self._win = win
         self._bodies = []
         self._show_vectors = False
+        self._show_trails = True
 
     def toggle_vectors_display(self) -> None:
         """
@@ -23,11 +25,20 @@ class Canvas:
         """
         self._show_vectors = not self._show_vectors
 
-    def clear(self) -> None:
+    def toggle_draw_trails(self) -> None:
         """
-        Removes all bodies from the canvas.
+        Switch between drawing trails and not doing that.
         """
-        self._bodies = []
+        self._show_trails = not self._show_trails
+
+    def draw(self) -> None:
+        """
+        Draw the canvas.
+        """
+        self._win.fill(COLORS.BLACK)
+
+        for body in self._bodies:
+            body.draw(self._show_vectors, self._show_trails)
 
     def add_body(
         self,
@@ -50,8 +61,10 @@ class Canvas:
             is_stationary(bool): whether the body is stationary or not
         """
         self._bodies.append(
-            Body(number, self._win, mass, init_x, init_y, init_vector,
-                 is_stationary)
+            Body(
+                number, self._win, mass, init_x, init_y, init_vector,
+                is_stationary
+                )
         )
 
     def update(self) -> None:

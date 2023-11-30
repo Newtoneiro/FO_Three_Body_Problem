@@ -4,7 +4,7 @@ import math
 import pygame
 
 from threeBodyProblem.objects.canvas import Canvas
-from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS, \
+from threeBodyProblem.constants import PYGAME_CONSTANTS, \
                                        PHYSICS_CONSTANTS
 
 
@@ -39,7 +39,6 @@ class Simulation:
         Initializes the enviroment.
         """
         self._last_pos_clicked = [0, 0]
-        self._selected_mass = PHYSICS_CONSTANTS.DEFAULT_BODY_MASS
         self._run = True
 
     def _init_canvas(self, body_distance: int) -> None:
@@ -76,27 +75,11 @@ class Simulation:
 
     # =============================================== #
 
-    def run(self) -> None:
-        """
-        Runs the simulation.
-        """
-        self._init_event_callbacks()
-        while self._run:
-            self._win.fill(COLORS.BLACK)
-            self._clock.tick(PYGAME_CONSTANTS.FPS)
-            self._canvas.update()
-
-            self._draw_bodies()
-            self._handle_events()
-
-            pygame.display.flip()
-
-    def _draw_bodies(self) -> None:
+    def _draw(self) -> None:
         """
         Draws all bodies on the canvas.
         """
-        for body in self._canvas._bodies:
-            body.draw(self._canvas._show_vectors)
+        self._canvas.draw()
 
     def _handle_events(self) -> None:
         """
@@ -115,8 +98,8 @@ class Simulation:
         }
 
         self._key_callbacks = {
-            pygame.K_c: self._handle_clear,
             pygame.K_v: self._handle_show_vectors,
+            pygame.K_t: self._handle_switch_draw_trails
         }
 
     # ================== EVENT HANDLERS ================== #
@@ -135,38 +118,33 @@ class Simulation:
 
     # ================== KEY CALLBACKS ================== #
 
-    def _handle_clear(self) -> None:
-        """
-        Handles clear event.
-        """
-        self._canvas.clear()
-
     def _handle_show_vectors(self) -> None:
         """
         Handles show vectors event.
         """
         self._canvas.toggle_vectors_display()
 
-    def _handle_add_particles(self) -> None:
+    def _handle_switch_draw_trails(self) -> None:
         """
-        Handles add particles event.
+        Handles switch draw trails event.
         """
-        x, y = pygame.mouse.get_pos()
-        for i in range(PHYSICS_CONSTANTS.PARTICLES_PER_CLICK):
-            self._canvas.add_body(
-                mass=1,
-                init_x=x,
-                init_y=y + i,
-                init_vector=[1, 1],
-                is_stationary=False,
-                is_particle=True,
-            )
+        self._canvas.toggle_draw_trails()
 
-    def _handle_mass_change(self, mass: int) -> None:
+    # ================== PUBLIC METHODS ================== #
+
+    def run(self) -> None:
         """
-        Handles mass change event.
+        Runs the simulation.
         """
-        self._selected_mass = mass
+        self._init_event_callbacks()
+        while self._run:
+            self._clock.tick(PYGAME_CONSTANTS.FPS)
+            self._canvas.update()
+
+            self._draw()
+            self._handle_events()
+
+            pygame.display.flip()
 
 
 if __name__ == "__main__":
