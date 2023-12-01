@@ -14,7 +14,7 @@ class PYGAME_CONSTANTS:
     WINDOW_TITLE: str = "t-draw_trails, v-vectors, g - graph, r - reset"
 
     GRAPH_WIDTH: int = int(WIDTH / 4)
-    GRAPH_HEIGHT: int = int(WIDTH / 4)
+    GRAPH_HEIGHT: int = int(HEIGHT / 4)
     GRAPH_THICKNESS: int = 2
     GRAPH_PADDING: int = 20
 

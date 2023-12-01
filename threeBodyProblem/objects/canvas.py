@@ -71,7 +71,7 @@ class Canvas:
                 PYGAME_CONSTANTS.GRAPH_PADDING,
                 PYGAME_CONSTANTS.HEIGHT -
                 (
-                    PYGAME_CONSTANTS.GRAPH_WIDTH +
+                    PYGAME_CONSTANTS.GRAPH_HEIGHT +
                     PYGAME_CONSTANTS.GRAPH_PADDING
                 )
             )
