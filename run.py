@@ -64,13 +64,21 @@ class Simulation:
             (center_x, center_y - height / 2)
             ]
 
-        for i, init_pos in enumerate(bodies_init_pos):
+        for i, (init_pos, next_init_pos) in enumerate(
+                zip(bodies_init_pos, bodies_init_pos[1:] + bodies_init_pos[:1])
+                ):
+            vel_vector = [
+                (next_init_pos[0] - init_pos[0])
+                * PHYSICS_CONSTANTS.DEFAULT_BODY_VELOCITY_FACTOR,
+                (next_init_pos[1] - init_pos[1])
+                * PHYSICS_CONSTANTS.DEFAULT_BODY_VELOCITY_FACTOR,
+            ]
             self._canvas.add_body(
                 number=i + 1,
                 mass=PHYSICS_CONSTANTS.DEFAULT_BODY_MASS,
                 init_x=init_pos[0],
                 init_y=init_pos[1],
-                init_vector=[0, 0],
+                init_vector=vel_vector,
                 is_stationary=False,
             )
 

@@ -20,40 +20,62 @@ class Canvas:
         self._show_trails = True
         self._show_graph = True
 
+        self._init_graph()
+
+    # ============= INITIALIZATION ============= #
+
+    def _init_graph(self) -> None:
+        """
+        Initialize the graph of the bodies' positions.
+        """
+        self._graph_win = pygame.Surface(
+            (
+                PYGAME_CONSTANTS.GRAPH_WIDTH +
+                PYGAME_CONSTANTS.GRAPH_THICKNESS,
+                PYGAME_CONSTANTS.GRAPH_HEIGHT +
+                PYGAME_CONSTANTS.GRAPH_THICKNESS
+            )
+        )
+
     # ============= PRIVATE METHODS ============= #
 
     def _plot_graph(self) -> None:
         """
         Plot the graph of the bodies' positions.
         """
+        self._graph_win.fill(COLORS.BACKGROUND_COLOR)
         # Draw the axes
-        graph_center = (
-            PYGAME_CONSTANTS.GRAPH_PADDING,
-            PYGAME_CONSTANTS.HEIGHT - PYGAME_CONSTANTS.GRAPH_PADDING
-        )
         pygame.draw.line(
-            self._win,
+            self._graph_win,
             COLORS.WHITE,
-            graph_center,
-            (
-                graph_center[0] + PYGAME_CONSTANTS.GRAPH_WIDTH,
-                graph_center[1]
-            ),
+            (0, PYGAME_CONSTANTS.GRAPH_HEIGHT),
+            (0, 0),
             PYGAME_CONSTANTS.GRAPH_THICKNESS
         )
         pygame.draw.line(
-            self._win,
+            self._graph_win,
             COLORS.WHITE,
-            graph_center,
+            (0, PYGAME_CONSTANTS.GRAPH_HEIGHT),
             (
-                graph_center[0],
-                graph_center[1] - PYGAME_CONSTANTS.GRAPH_HEIGHT
+                PYGAME_CONSTANTS.GRAPH_WIDTH,
+                PYGAME_CONSTANTS.GRAPH_HEIGHT
             ),
             PYGAME_CONSTANTS.GRAPH_THICKNESS
         )
         # Draw the trails
         for body in self._bodies:
-            body.plot_on_graph()
+            body.plot_on_graph(self._graph_win)
+        self._win.blit(
+            self._graph_win,
+            (
+                PYGAME_CONSTANTS.GRAPH_PADDING,
+                PYGAME_CONSTANTS.HEIGHT -
+                (
+                    PYGAME_CONSTANTS.GRAPH_WIDTH +
+                    PYGAME_CONSTANTS.GRAPH_PADDING
+                )
+            )
+        )
 
     # ============= PUBLIC METHODS =============== #
 
@@ -74,7 +96,7 @@ class Canvas:
         Switch between plotting the graph and not doing that.
         """
         self._show_graph = not self._show_graph
-    
+
     def reset(self) -> None:
         """
         Reset the canvas.

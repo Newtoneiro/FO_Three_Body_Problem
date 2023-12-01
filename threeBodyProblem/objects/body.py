@@ -201,16 +201,9 @@ class Body:
         """
         return (
             coordinates[0] * PYGAME_CONSTANTS.GRAPH_WIDTH
-            / PYGAME_CONSTANTS.WIDTH + PYGAME_CONSTANTS.GRAPH_PADDING,
+            / PYGAME_CONSTANTS.WIDTH,
             coordinates[1] * PYGAME_CONSTANTS.GRAPH_HEIGHT
-            / PYGAME_CONSTANTS.HEIGHT +
-            (
-                PYGAME_CONSTANTS.HEIGHT -
-                (
-                  PYGAME_CONSTANTS.GRAPH_HEIGHT +
-                  PYGAME_CONSTANTS.GRAPH_PADDING
-                )
-            ),
+            / PYGAME_CONSTANTS.HEIGHT,
         )
 
     # ============== PUBLIC METHODS =============== #
@@ -284,14 +277,13 @@ class Body:
         if show_velocity_vectors:
             self._draw_velocity_vector()
 
-    def plot_on_graph(self) -> None:
+    def plot_on_graph(self, plot_win: pygame.Surface) -> None:
         """
         Plot the body on the graph.
         """
         for i in range(len(self._pos_history) - 1):
-
             pygame.draw.line(
-                surface=self._win,
+                surface=plot_win,
                 color=self._color,
                 start_pos=self.cast_to_plot_coordinates(
                     self._pos_history[i]
