@@ -186,6 +186,33 @@ class Body:
             for c1, c2 in zip(color1, color2)
             ]
 
+    @staticmethod
+    def cast_to_plot_coordinates(
+            coordinates: tuple[int, int]
+            ) -> tuple[int, int]:
+        """
+        Cast the coordinates to the coordinates on the graph.
+
+        Args:
+            coordinates(tuple[int, int]): the coordinates to cast
+
+        Returns:
+            tuple[int, int]: the casted coordinates
+        """
+        return (
+            coordinates[0] * PYGAME_CONSTANTS.GRAPH_WIDTH
+            / PYGAME_CONSTANTS.WIDTH + PYGAME_CONSTANTS.GRAPH_PADDING,
+            coordinates[1] * PYGAME_CONSTANTS.GRAPH_HEIGHT
+            / PYGAME_CONSTANTS.HEIGHT +
+            (
+                PYGAME_CONSTANTS.HEIGHT -
+                (
+                  PYGAME_CONSTANTS.GRAPH_HEIGHT +
+                  PYGAME_CONSTANTS.GRAPH_PADDING
+                )
+            ),
+        )
+
     # ============== PUBLIC METHODS =============== #
 
     def calculate_impact_on(self, other: Body) -> None:
@@ -256,3 +283,21 @@ class Body:
         )
         if show_velocity_vectors:
             self._draw_velocity_vector()
+
+    def plot_on_graph(self) -> None:
+        """
+        Plot the body on the graph.
+        """
+        for i in range(len(self._pos_history) - 1):
+
+            pygame.draw.line(
+                surface=self._win,
+                color=self._color,
+                start_pos=self.cast_to_plot_coordinates(
+                    self._pos_history[i]
+                ),
+                end_pos=self.cast_to_plot_coordinates(
+                    self._pos_history[i + 1]
+                ),
+                width=PYGAME_CONSTANTS.GRAPH_THICKNESS,
+            )

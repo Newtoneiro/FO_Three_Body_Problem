@@ -11,13 +11,18 @@ class PYGAME_CONSTANTS:
     WIDTH: int = 1000
     HEIGHT: int = 1000
     FPS: int = 120
-    WINDOW_TITLE: str = "t-draw_trails, v-vectors"
+    WINDOW_TITLE: str = "t-draw_trails, v-vectors, g - graph, r - reset"
+
+    GRAPH_WIDTH: int = int(WIDTH / 4)
+    GRAPH_HEIGHT: int = int(WIDTH / 4)
+    GRAPH_THICKNESS: int = 2
+    GRAPH_PADDING: int = 20
 
     VECTOR_WIDTH: int = 2
     TRAIL_WIDTH: int = 5
     VECTOR_LENGTH_MULTI: int = 10
 
-    BODY_TRAIL_LENGTH: int = 500
+    BODY_TRAIL_LENGTH: int = 1000
     BODY_TRAIL_DROPOFF_TRESHOLD: float = 0.5  # when to start the fadeout
 
 
@@ -45,7 +50,7 @@ class PHYSICS_CONSTANTS:
     """
 
     # Constants for physics
-    GRAVITATIONAL_CONSTANT: float = 0.20
+    GRAVITATIONAL_CONSTANT: float = 0.14
 
     # Body constants
     MAX_BODY_RADIUS: int = 100

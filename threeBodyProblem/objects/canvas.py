@@ -3,7 +3,7 @@
 import pygame
 
 from threeBodyProblem.objects.body import Body
-from threeBodyProblem.constants import COLORS
+from threeBodyProblem.constants import COLORS, PYGAME_CONSTANTS
 
 
 class Canvas:
@@ -18,6 +18,44 @@ class Canvas:
         self._bodies = []
         self._show_vectors = False
         self._show_trails = True
+        self._show_graph = True
+
+    # ============= PRIVATE METHODS ============= #
+
+    def _plot_graph(self) -> None:
+        """
+        Plot the graph of the bodies' positions.
+        """
+        # Draw the axes
+        graph_center = (
+            PYGAME_CONSTANTS.GRAPH_PADDING,
+            PYGAME_CONSTANTS.HEIGHT - PYGAME_CONSTANTS.GRAPH_PADDING
+        )
+        pygame.draw.line(
+            self._win,
+            COLORS.WHITE,
+            graph_center,
+            (
+                graph_center[0] + PYGAME_CONSTANTS.GRAPH_WIDTH,
+                graph_center[1]
+            ),
+            PYGAME_CONSTANTS.GRAPH_THICKNESS
+        )
+        pygame.draw.line(
+            self._win,
+            COLORS.WHITE,
+            graph_center,
+            (
+                graph_center[0],
+                graph_center[1] - PYGAME_CONSTANTS.GRAPH_HEIGHT
+            ),
+            PYGAME_CONSTANTS.GRAPH_THICKNESS
+        )
+        # Draw the trails
+        for body in self._bodies:
+            body.plot_on_graph()
+
+    # ============= PUBLIC METHODS =============== #
 
     def toggle_vectors_display(self) -> None:
         """
@@ -31,6 +69,18 @@ class Canvas:
         """
         self._show_trails = not self._show_trails
 
+    def toggle_plot_graph(self) -> None:
+        """
+        Switch between plotting the graph and not doing that.
+        """
+        self._show_graph = not self._show_graph
+    
+    def reset(self) -> None:
+        """
+        Reset the canvas.
+        """
+        self._bodies = []
+
     def draw(self) -> None:
         """
         Draw the canvas.
@@ -39,6 +89,9 @@ class Canvas:
 
         for body in self._bodies:
             body.draw(self._show_vectors, self._show_trails)
+
+        if self._show_graph:
+            self._plot_graph()
 
     def add_body(
         self,
@@ -62,9 +115,14 @@ class Canvas:
         """
         self._bodies.append(
             Body(
-                number, self._win, mass, init_x, init_y, init_vector,
+                number,
+                self._win,
+                mass,
+                init_x,
+                init_y,
+                init_vector,
                 is_stationary
-                )
+            )
         )
 
     def update(self) -> None:

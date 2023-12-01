@@ -19,9 +19,10 @@ class Simulation:
             self,
             bodies_distance: float = PHYSICS_CONSTANTS.DEFAULT_BODY_DISTANCE
             ) -> None:
+        self._init_bodies_distance = bodies_distance
         self._init_pygame()
         self._init_enviroment()
-        self._init_canvas(bodies_distance)
+        self._init_canvas()
 
     def _init_pygame(self) -> None:
         """
@@ -41,25 +42,25 @@ class Simulation:
         self._last_pos_clicked = [0, 0]
         self._run = True
 
-    def _init_canvas(self, body_distance: int) -> None:
+    def _init_canvas(self) -> None:
         """
         Initializes the canvas.
         """
         self._canvas = Canvas(self._win)
-        self._init_bodies(body_distance)
+        self._init_bodies()
 
-    def _init_bodies(self, body_distance: int) -> None:
+    def _init_bodies(self) -> None:
         """
         Initializes the bodies positions as equilateral triangle
         on the canvas.
         """
         center_x = PYGAME_CONSTANTS.WIDTH / 2
         center_y = PYGAME_CONSTANTS.HEIGHT / 2
-        height = (math.sqrt(3) / 2) * body_distance
+        height = (math.sqrt(3) / 2) * self._init_bodies_distance
 
         bodies_init_pos = [
-            (center_x - body_distance / 2, center_y + height / 2),
-            (center_x + body_distance / 2, center_y + height / 2),
+            (center_x - self._init_bodies_distance / 2, center_y + height / 2),
+            (center_x + self._init_bodies_distance / 2, center_y + height / 2),
             (center_x, center_y - height / 2)
             ]
 
@@ -99,7 +100,9 @@ class Simulation:
 
         self._key_callbacks = {
             pygame.K_v: self._handle_show_vectors,
-            pygame.K_t: self._handle_switch_draw_trails
+            pygame.K_t: self._handle_switch_draw_trails,
+            pygame.K_g: self._handle_switch_plot_graph,
+            pygame.K_r: self._handle_reset,
         }
 
     # ================== EVENT HANDLERS ================== #
@@ -129,6 +132,19 @@ class Simulation:
         Handles switch draw trails event.
         """
         self._canvas.toggle_draw_trails()
+
+    def _handle_switch_plot_graph(self) -> None:
+        """
+        Handles switch plot graph event.
+        """
+        self._canvas.toggle_plot_graph()
+
+    def _handle_reset(self) -> None:
+        """
+        Handles reset event.
+        """
+        self._canvas.reset()
+        self._init_bodies()
 
     # ================== PUBLIC METHODS ================== #
 
