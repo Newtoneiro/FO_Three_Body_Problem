@@ -20,7 +20,7 @@ class PYGAME_CONSTANTS:
 
     VECTOR_WIDTH: int = 2
     TRAIL_WIDTH: int = 5
-    VECTOR_LENGTH_MULTI: int = 10
+    VECTOR_LENGTH_MULTI: int = 35
 
     BODY_TRAIL_LENGTH: int = 1000
     BODY_TRAIL_DROPOFF_TRESHOLD: float = 0.5  # when to start the fadeout

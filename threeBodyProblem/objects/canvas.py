@@ -3,7 +3,8 @@
 import pygame
 
 from threeBodyProblem.objects.body import Body
-from threeBodyProblem.constants import COLORS, PYGAME_CONSTANTS
+from threeBodyProblem.constants import COLORS, PHYSICS_CONSTANTS, \
+                                       PYGAME_CONSTANTS
 
 
 class Canvas:
@@ -17,7 +18,7 @@ class Canvas:
         self._win = win
         self._bodies = []
         self._show_vectors = False
-        self._show_trails = True
+        self._show_trails = False
         self._show_graph = True
 
         self._init_graph()
@@ -79,7 +80,7 @@ class Canvas:
 
     # ============= PUBLIC METHODS =============== #
 
-    def toggle_vectors_display(self) -> None:
+    def toggle_draw_vectors(self) -> None:
         """
         Switch between displaying bodies' vectors and not doing that.
         """
@@ -107,7 +108,7 @@ class Canvas:
         """
         Draw the canvas.
         """
-        self._win.fill(COLORS.BLACK)
+        self._win.fill(COLORS.BACKGROUND_COLOR)
 
         for body in self._bodies:
             body.draw(self._show_vectors, self._show_trails)
@@ -123,6 +124,7 @@ class Canvas:
         init_y: int,
         init_vector: list[float],
         is_stationary: bool = False,
+        g_constant: float = PHYSICS_CONSTANTS.GRAVITATIONAL_CONSTANT
     ) -> None:
         """
         Initialize and add a body to the canvas.
@@ -143,7 +145,8 @@ class Canvas:
                 init_x,
                 init_y,
                 init_vector,
-                is_stationary
+                is_stationary,
+                g_constant
             )
         )
 

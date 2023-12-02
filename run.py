@@ -1,28 +1,25 @@
 """Main file presenting the whole program in action."""
 
-import math
 import pygame
 
-from threeBodyProblem.objects.canvas import Canvas
-from threeBodyProblem.constants import PYGAME_CONSTANTS, \
-                                       PHYSICS_CONSTANTS
+from threeBodyProblem.simulation import Simulation
+from threeBodyProblem.simulation_params import SimulationParams
+from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS
 
 
-class Simulation:
+class SimulationManager:
     """
-    Class representing the whole simulation.
+    Class managing the simulations.
     """
 
     # ============== INITIALIZATION =============== #
 
     def __init__(
             self,
-            bodies_distance: float = PHYSICS_CONSTANTS.DEFAULT_BODY_DISTANCE
             ) -> None:
-        self._init_bodies_distance = bodies_distance
         self._init_pygame()
         self._init_enviroment()
-        self._init_canvas()
+        self._init_simulations()
 
     def _init_pygame(self) -> None:
         """
@@ -42,53 +39,22 @@ class Simulation:
         self._last_pos_clicked = [0, 0]
         self._run = True
 
-    def _init_canvas(self) -> None:
+    def _init_simulations(self) -> None:
         """
-        Initializes the canvas.
+        Initializes the simulations.
         """
-        self._canvas = Canvas(self._win)
-        self._init_bodies()
-
-    def _init_bodies(self) -> None:
-        """
-        Initializes the bodies positions as equilateral triangle
-        on the canvas.
-        """
-        center_x = PYGAME_CONSTANTS.WIDTH / 2
-        center_y = PYGAME_CONSTANTS.HEIGHT / 2
-        height = (math.sqrt(3) / 2) * self._init_bodies_distance
-
-        bodies_init_pos = [
-            (center_x - self._init_bodies_distance / 2, center_y + height / 2),
-            (center_x + self._init_bodies_distance / 2, center_y + height / 2),
-            (center_x, center_y - height / 2)
-            ]
-
-        for i, (init_pos, next_init_pos) in enumerate(
-                zip(bodies_init_pos, bodies_init_pos[1:] + bodies_init_pos[:1])
-                ):
-            vel_vector = [
-                (next_init_pos[0] - init_pos[0])
-                * PHYSICS_CONSTANTS.DEFAULT_BODY_VELOCITY_FACTOR,
-                (next_init_pos[1] - init_pos[1])
-                * PHYSICS_CONSTANTS.DEFAULT_BODY_VELOCITY_FACTOR,
-            ]
-            self._canvas.add_body(
-                number=i + 1,
-                mass=PHYSICS_CONSTANTS.DEFAULT_BODY_MASS,
-                init_x=init_pos[0],
-                init_y=init_pos[1],
-                init_vector=vel_vector,
-                is_stationary=False,
-            )
-
-    # =============================================== #
-
-    def _draw(self) -> None:
-        """
-        Draws all bodies on the canvas.
-        """
-        self._canvas.draw()
+        self._simulations = [
+            Simulation(
+                self._win,
+                self._clock,
+                SimulationParams(255, 400, 1000, 0.40)
+            ),
+            Simulation(
+                self._win,
+                self._clock,
+                SimulationParams(50, 400, 1000, 0.400001)
+            ),
+        ]
 
     def _handle_events(self) -> None:
         """
@@ -133,44 +99,46 @@ class Simulation:
         """
         Handles show vectors event.
         """
-        self._canvas.toggle_vectors_display()
+        for simulation in self._simulations:
+            simulation.toggle_show_vectors()
 
     def _handle_switch_draw_trails(self) -> None:
         """
         Handles switch draw trails event.
         """
-        self._canvas.toggle_draw_trails()
+        for simulation in self._simulations:
+            simulation.toggle_draw_trails()
 
     def _handle_switch_plot_graph(self) -> None:
         """
         Handles switch plot graph event.
         """
-        self._canvas.toggle_plot_graph()
+        for simulation in self._simulations:
+            simulation.toggle_show_graph()
 
     def _handle_reset(self) -> None:
         """
         Handles reset event.
         """
-        self._canvas.reset()
-        self._init_bodies()
+        for simulation in self._simulations:
+            simulation.reset()
 
     # ================== PUBLIC METHODS ================== #
 
     def run(self) -> None:
         """
-        Runs the simulation.
+        Runs the simulations.
         """
         self._init_event_callbacks()
         while self._run:
             self._clock.tick(PYGAME_CONSTANTS.FPS)
-            self._canvas.update()
-
-            self._draw()
+            self._win.fill(COLORS.BACKGROUND_COLOR)
+            for simulation in self._simulations:
+                simulation.run()
             self._handle_events()
-
             pygame.display.flip()
 
 
 if __name__ == "__main__":
-    simulation = Simulation()
-    simulation.run()
+    sm = SimulationManager()
+    sm.run()

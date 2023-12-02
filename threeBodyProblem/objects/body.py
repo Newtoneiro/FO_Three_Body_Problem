@@ -27,6 +27,7 @@ class Body:
         init_y: int,
         init_vector: list[int] = [0, 0],
         is_stationary: bool = False,
+        g_constant: float = PHYSICS_CONSTANTS.GRAVITATIONAL_CONSTANT,
         density: float = PHYSICS_CONSTANTS.DEFAULT_BODY_DENSITY,
     ):
         self._number = number
@@ -37,6 +38,7 @@ class Body:
         self._y = init_y
         self._vector = init_vector
         self._is_stationary = is_stationary
+        self._g_constant = g_constant
         self._density = density
 
         self._init_last_positions()
@@ -229,7 +231,7 @@ class Body:
         dx = self._x - other._x
         dy = self._y - other._y
         gravitational_force = (  # From the formula F = G * M * m / d^2
-            PHYSICS_CONSTANTS.GRAVITATIONAL_CONSTANT * self._mass * other._mass
+            self._g_constant * self._mass * other._mass
         ) / d**2
         Fx = gravitational_force * dx / d
         Fy = gravitational_force * dy / d
