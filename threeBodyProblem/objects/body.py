@@ -7,8 +7,7 @@ from collections import deque
 import pygame
 import math
 
-from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS, \
-                                       PHYSICS_CONSTANTS
+from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS, PHYSICS_CONSTANTS
 
 
 class Body:
@@ -25,7 +24,7 @@ class Body:
         mass: float,
         init_x: int,
         init_y: int,
-        init_vector: list[int] = [0, 0],
+        init_vector: list[float] = [0, 0],
         is_stationary: bool = False,
         g_constant: float = PHYSICS_CONSTANTS.GRAVITATIONAL_CONSTANT,
         density: float = PHYSICS_CONSTANTS.DEFAULT_BODY_DENSITY,
@@ -60,24 +59,23 @@ class Body:
 
         If the body's radius exceeds the set boundaries, it get's reduced.
         """
-        self._radius = (3 / 4 * math.pi) * \
-                       (self._mass / self._density) ** (1 / 3)
+        self._radius = (3 / 4 * math.pi) * (self._mass / self._density) ** (1 / 3)
         if self._radius > PHYSICS_CONSTANTS.MAX_BODY_RADIUS:
             self._radius = PHYSICS_CONSTANTS.MAX_BODY_RADIUS
         elif self._radius < PHYSICS_CONSTANTS.MIN_BODY_RADIUS:
             self._radius = PHYSICS_CONSTANTS.MIN_BODY_RADIUS
 
     def _check_and_update_boundary(
-        self, axis: int, limit: int, radius: float, vector_index: int
-    ) -> int:
+        self, axis: float, limit: float, radius: float, vector_index: int
+    ) -> float:
         """
         Checks if the body is within the boundaries of the simulation space.
         If the body is outside the boundaries, it is bounced back with
         reduced velocity.
 
         Args:
-            axis (int): The current position of the body on the given axis.
-            limit (int): The maximum position of the body on the given axis.
+            axis (float): The current position of the body on the given axis.
+            limit (float): The maximum position of the body on the given axis.
             radius (float): The radius of the body.
             vector_index (int): The index of the vector component that
             corresponds to the given axis.
@@ -88,14 +86,12 @@ class Body:
         if axis < radius:
             axis = 1 + radius
             self._vector[vector_index] = (
-                -PHYSICS_CONSTANTS.VELOCITY_LOSS_FACTOR *
-                self._vector[vector_index]
+                -PHYSICS_CONSTANTS.VELOCITY_LOSS_FACTOR * self._vector[vector_index]
             )
         elif axis > limit - radius:
             axis = limit - radius
             self._vector[vector_index] = (
-                -PHYSICS_CONSTANTS.VELOCITY_LOSS_FACTOR *
-                self._vector[vector_index]
+                -PHYSICS_CONSTANTS.VELOCITY_LOSS_FACTOR * self._vector[vector_index]
             )
 
         return axis
@@ -115,16 +111,15 @@ class Body:
             color=COLORS.VELOCITY_VECTORS_COLOR,
             start_pos=(self._x, self._y),
             end_pos=(
-                self._x + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
-                self._vector[0],
-                self._y + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI *
-                self._vector[1],
+                self._x + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI * self._vector[0],
+                self._y + PYGAME_CONSTANTS.VECTOR_LENGTH_MULTI * self._vector[1],
             ),
             width=PYGAME_CONSTANTS.VECTOR_WIDTH,
         )
 
-    def _update_trail_variables(self, segment: int, opacity: float) \
-            -> tuple[tuple, float]:
+    def _update_trail_variables(
+        self, segment: int, opacity: float
+    ) -> tuple[tuple, float]:
         """
         Return the color of the trail segment.
 
@@ -136,9 +131,8 @@ class Body:
             tuple: the color of the segment
             float: the opacity of the segment
         """
-        dropoff_treshold = int(
-            self._pos_history.maxlen *
-            PYGAME_CONSTANTS.BODY_TRAIL_DROPOFF_TRESHOLD
+        dropoff_treshold = (
+            len(self._pos_history) * PYGAME_CONSTANTS.BODY_TRAIL_DROPOFF_TRESHOLD
         )
 
         if segment < dropoff_treshold:
@@ -168,9 +162,7 @@ class Body:
     # ============== STATIC METHODS =============== #
 
     @staticmethod
-    def change_color_opacity(
-            color1: tuple, color2: tuple, opacity: float
-            ) -> tuple:
+    def change_color_opacity(color1: tuple, color2: tuple, opacity: float) -> tuple:
         """
         Change the opacity of color1 to opacity, and return the result.
 
@@ -183,15 +175,12 @@ class Body:
         Returns:
             tuple: the color with the changed opacity
         """
-        return [
-            opacity * c1 + (1 - opacity) * c2
-            for c1, c2 in zip(color1, color2)
-            ]
+        return tuple(
+            [opacity * c1 + (1 - opacity) * c2 for c1, c2 in zip(color1, color2)]
+        )
 
     @staticmethod
-    def cast_to_plot_coordinates(
-            coordinates: tuple[int, int]
-            ) -> tuple[int, int]:
+    def cast_to_plot_coordinates(coordinates: tuple[int, int]) -> tuple[int, int]:
         """
         Cast the coordinates to the coordinates on the graph.
 
@@ -202,10 +191,8 @@ class Body:
             tuple[int, int]: the casted coordinates
         """
         return (
-            coordinates[0] * PYGAME_CONSTANTS.GRAPH_WIDTH
-            / PYGAME_CONSTANTS.WIDTH,
-            coordinates[1] * PYGAME_CONSTANTS.GRAPH_HEIGHT
-            / PYGAME_CONSTANTS.HEIGHT,
+            coordinates[0] * PYGAME_CONSTANTS.GRAPH_WIDTH // PYGAME_CONSTANTS.WIDTH,
+            coordinates[1] * PYGAME_CONSTANTS.GRAPH_HEIGHT // PYGAME_CONSTANTS.HEIGHT,
         )
 
     # ============== PUBLIC METHODS =============== #
@@ -259,10 +246,8 @@ class Body:
         )
 
     def draw(
-            self,
-            show_velocity_vectors: bool = False,
-            show_trails: bool = False
-            ) -> None:
+        self, show_velocity_vectors: bool = False, show_trails: bool = False
+    ) -> None:
         """
         Draw the body on the canvas. If show_velocity_vectors is True,
         also draw the velocity vector of the body. If show_trails is True,
@@ -287,11 +272,7 @@ class Body:
             pygame.draw.line(
                 surface=plot_win,
                 color=self._color,
-                start_pos=self.cast_to_plot_coordinates(
-                    self._pos_history[i]
-                ),
-                end_pos=self.cast_to_plot_coordinates(
-                    self._pos_history[i + 1]
-                ),
+                start_pos=self.cast_to_plot_coordinates(self._pos_history[i]),
+                end_pos=self.cast_to_plot_coordinates(self._pos_history[i + 1]),
                 width=PYGAME_CONSTANTS.GRAPH_THICKNESS,
             )

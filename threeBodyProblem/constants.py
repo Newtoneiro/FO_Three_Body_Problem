@@ -50,7 +50,7 @@ class PHYSICS_CONSTANTS:
     """
 
     # Constants for physics
-    GRAVITATIONAL_CONSTANT: float = 0.4
+    GRAVITATIONAL_CONSTANT: float = 0.6
 
     # Body constants
     MAX_BODY_RADIUS: int = 100

@@ -3,8 +3,7 @@ import pygame
 
 from threeBodyProblem.simulation_params import SimulationParams
 from threeBodyProblem.objects.canvas import Canvas
-from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS, \
-                                       PHYSICS_CONSTANTS
+from threeBodyProblem.constants import PYGAME_CONSTANTS, COLORS, PHYSICS_CONSTANTS
 
 
 class Simulation:
@@ -15,11 +14,11 @@ class Simulation:
     # ============== INITIALIZATION =============== #
 
     def __init__(
-            self,
-            win: pygame.Surface,
-            clock: pygame.time.Clock,
-            simulation_params: SimulationParams,
-            ) -> None:
+        self,
+        win: pygame.Surface,
+        clock: pygame.time.Clock,
+        simulation_params: SimulationParams,
+    ) -> None:
         self._win = win
         self._clock = clock
         self._params = simulation_params
@@ -37,6 +36,7 @@ class Simulation:
         )
         self._surface.set_colorkey(COLORS.BACKGROUND_COLOR)
         self._surface.set_alpha(self._params.alpha)
+        self._surface = self._surface.convert_alpha()
 
     def _init_canvas(self) -> None:
         """
@@ -57,12 +57,12 @@ class Simulation:
         bodies_init_pos = [
             (center_x - self._params.body_distance / 2, center_y + height / 2),
             (center_x + self._params.body_distance / 2, center_y + height / 2),
-            (center_x, center_y - height / 2)
-            ]
+            (center_x, center_y - height / 2),
+        ]
 
         for i, (init_pos, next_init_pos) in enumerate(
-                zip(bodies_init_pos, bodies_init_pos[1:] + bodies_init_pos[:1])
-                ):
+            zip(bodies_init_pos, bodies_init_pos[1:] + bodies_init_pos[:1])
+        ):
             vel_vector = [
                 (next_init_pos[0] - init_pos[0])
                 * PHYSICS_CONSTANTS.DEFAULT_BODY_VELOCITY_FACTOR,
@@ -72,8 +72,8 @@ class Simulation:
             self._canvas.add_body(
                 number=i + 1,
                 mass=self._params.mass,
-                init_x=init_pos[0],
-                init_y=init_pos[1],
+                init_x=int(init_pos[0]),
+                init_y=int(init_pos[1]),
                 init_vector=vel_vector,
                 is_stationary=False,
                 g_constant=self._params.g_constant,

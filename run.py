@@ -15,8 +15,8 @@ class SimulationManager:
     # ============== INITIALIZATION =============== #
 
     def __init__(
-            self,
-            ) -> None:
+        self,
+    ) -> None:
         self._init_pygame()
         self._init_enviroment()
         self._init_simulations()
@@ -44,15 +44,9 @@ class SimulationManager:
         Initializes the simulations.
         """
         self._simulations = [
+            Simulation(self._win, self._clock, SimulationParams(255, 400, 1000, 0.40)),
             Simulation(
-                self._win,
-                self._clock,
-                SimulationParams(255, 400, 1000, 0.40)
-            ),
-            Simulation(
-                self._win,
-                self._clock,
-                SimulationParams(50, 400, 1000, 0.400001)
+                self._win, self._clock, SimulationParams(50, 400, 1000, 0.400001)
             ),
         ]
 
@@ -81,7 +75,7 @@ class SimulationManager:
 
     # ================== EVENT HANDLERS ================== #
 
-    def _handle_stop(self, event: pygame.event.Event) -> None:
+    def _handle_stop(self, _: pygame.event.Event) -> None:
         """
         Stops the simulation.
         """
