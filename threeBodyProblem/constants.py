@@ -25,6 +25,8 @@ class PYGAME_CONSTANTS:
     BODY_TRAIL_LENGTH: int = 1000
     BODY_TRAIL_DROPOFF_TRESHOLD: float = 0.5  # when to start the fadeout
 
+    MAX_SIMULATIONS: int = 2
+
 
 class COLORS:
     """
@@ -36,6 +38,7 @@ class COLORS:
     RED: tuple = 239, 71, 111
     YELLOW: tuple = 255, 209, 102
     GREEN: tuple = 6, 214, 160
+    TRANSPARENT: tuple = 0, 0, 0, 0
 
     BACKGROUND_COLOR: tuple = BLACK
     VELOCITY_VECTORS_COLOR: tuple = WHITE

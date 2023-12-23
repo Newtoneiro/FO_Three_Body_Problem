@@ -1,6 +1,7 @@
 """Main file presenting the whole program in action."""
 
 import pygame
+import argparse
 
 from threeBodyProblem.simulation import Simulation
 from threeBodyProblem.simulation_params import SimulationParams
@@ -16,10 +17,28 @@ class SimulationManager:
 
     def __init__(
         self,
+        input_args,
     ) -> None:
         self._init_pygame()
         self._init_enviroment()
-        self._init_simulations()
+        self._init_simulations(self._parse_input_args(input_args))
+
+    def _parse_input_args(self, args):
+        args = [arg for arg in vars(args).values() if arg is not None]
+        alpha = 255
+        step = int(alpha / len(args))
+        allSimulationParams = []
+        for simulation_args in args:
+            allSimulationParams.append(
+                SimulationParams(
+                    alpha=alpha,
+                    body_distance=simulation_args[0],
+                    mass=simulation_args[1],
+                    g_constant=simulation_args[2],
+                )
+            )
+            alpha -= step
+        return allSimulationParams
 
     def _init_pygame(self) -> None:
         """
@@ -39,15 +58,12 @@ class SimulationManager:
         self._last_pos_clicked = [0, 0]
         self._run = True
 
-    def _init_simulations(self) -> None:
+    def _init_simulations(self, simulation_params: list[SimulationParams]) -> None:
         """
         Initializes the simulations.
         """
         self._simulations = [
-            Simulation(self._win, self._clock, SimulationParams(255, 400, 1000, 0.40)),
-            Simulation(
-                self._win, self._clock, SimulationParams(50, 400, 1000, 0.400001)
-            ),
+            Simulation(self._win, self._clock, params) for params in simulation_params
         ]
 
     def _handle_events(self) -> None:
@@ -134,5 +150,19 @@ class SimulationManager:
 
 
 if __name__ == "__main__":
-    sm = SimulationManager()
+    parser = argparse.ArgumentParser()
+    for i in range(1, PYGAME_CONSTANTS.MAX_SIMULATIONS + 1):
+        parser.add_argument(
+            f"--simulation{i}",
+            type=float,
+            nargs=3,
+            metavar="N",
+            help=f"List of numbers for simulation {i}:\n"
+            + "0: Distance between bodies\n"
+            + "1: Bodies masses\n"
+            + "2: Gravitational const",
+            required=True if i == 1 else False,
+        )
+    args = parser.parse_args()
+    sm = SimulationManager(input_args=args)
     sm.run()
