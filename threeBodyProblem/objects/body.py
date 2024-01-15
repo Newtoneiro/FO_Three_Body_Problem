@@ -238,12 +238,12 @@ class Body:
 
         self._update_pos_history()
 
-        self._x = self._check_and_update_boundary(
-            self._x, PYGAME_CONSTANTS.WIDTH, self._radius, 0
-        )
-        self._y = self._check_and_update_boundary(
-            self._y, PYGAME_CONSTANTS.HEIGHT, self._radius, 1
-        )
+        # self._x = self._check_and_update_boundary(
+        #     self._x, PYGAME_CONSTANTS.WIDTH, self._radius, 0
+        # )
+        # self._y = self._check_and_update_boundary(
+        #     self._y, PYGAME_CONSTANTS.HEIGHT, self._radius, 1
+        # )
 
     def draw(
         self, show_velocity_vectors: bool = False, show_trails: bool = False
