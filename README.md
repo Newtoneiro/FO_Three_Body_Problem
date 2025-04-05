@@ -1,5 +1,9 @@
 # Symulacja problemu trzech ciał
 
+
+https://github.com/user-attachments/assets/80c688c8-fe2a-4010-9792-da316e9bdd37
+
+
 ## Opis problemu
 
 Problem trzech ciał jest zagadnieniem z zakresu dynamiki klasycznej, w którym należy obliczyć trajektorie ruchu trzech ciał poruszających się pod wpływem wzajemnego oddziaływania grawitacyjnego.
